@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(270deg, #f5373de9, #ffffff7c, #f5373de9);
+  background-size: 250% 250%;
+  background-clip: text; 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-x 5s linear infinite;
+}
+
+.animated-gradient-hover:hover {
+  background: linear-gradient(270deg, #f5373de9, #ffffff7c, #f5373de9);
+  background-size: 250% 250%;
+  background-clip: text; 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-x 5s linear infinite;
+}
+.glowing-border {
+  position: relative;
+  border-radius: 1rem; /* same as Tailwind's rounded-4xl */
+}
+
+.glowing-border::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: conic-gradient(
+    from var(--deg, 0deg) at center,
+    #00c3ff,
+    #4d0199,
+    #4d0199,
+    #00c3ff
+  );
+  border-radius: inherit;
+  z-index: -1;
+  padding: 2px;  /* thickness of glow */
+  filter: blur(10px);
+  animation: autoRotate 2s linear infinite;
+  pointer-events: none; /* so it doesn't block clicks */
+}
+
+@keyframes autoRotate {
+  to {
+    --deg: 360deg;
+  }
+}
