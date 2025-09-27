@@ -2,16 +2,16 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth"; // ✅ Import auth
+import { getAuth } from "firebase/auth"; 
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyD5p5vjvVqvVfjbzUgDhaZQIwS-uRj5q18",
+  authDomain: "investment-app-57041.firebaseapp.com",
+  projectId: "investment-app-57041",
+  storageBucket: "investment-app-57041.firebasestorage.app",
+  messagingSenderId: "419010766003",
+  appId: "1:419010766003:web:3db838a9adbff9c9543cc6",
+  measurementId: "G-JM510B8C8H"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -23,6 +23,6 @@ if (typeof window !== "undefined") {
 console.log("Firebase initialized:", app.name);
 
 const db = getFirestore(app);
-const auth = getAuth(app); // ✅ Initialize and export auth
+const auth = getAuth(app); 
 
-export { db, auth, analytics }; // ✅ Export it
+export { db, auth, analytics }; 

@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { auth } from '../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';
 import Signup from '../signup/page';
 
 export default function SignInPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,6 +20,7 @@ export default function SignInPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log('User signed in');
+      router.push('/home');
     } catch (err) {
       setError(err.message);
     }
@@ -34,7 +37,7 @@ export default function SignInPage() {
           className="object-cover w-full h-full"
         >
           <source src="/money_vid.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
+          Video Not supported
         </video>
       </div>
 

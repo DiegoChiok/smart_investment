@@ -15,9 +15,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      //if (!user) {
-      //  router.push("/"); // back to welcome/login
-      //}
+    if (!user) {
+        router.push("/welcome");
+      }
     });
     return () => unsubscribe();
   }, [router]);
@@ -34,7 +34,7 @@ export default function DashboardPage() {
             className="object-cover w-full h-full"
             >
             <source src="/homeback.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
+            Video Not supported
             </video>
         </div>
 

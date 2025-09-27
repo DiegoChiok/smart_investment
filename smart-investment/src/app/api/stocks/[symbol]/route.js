@@ -1,27 +1,29 @@
-import yahooFinance from 'yahoo-finance2';
+import { NextResponse } from "next/server";
+import yahooFinance from "yahoo-finance2";
 
-export async function GET(request, { params }) {
-  const { symbol } = params;
+export const dynamic = "force-dynamic"; // avoid caching during dev
+
+export async function GET(_req, { params }) {
+  const symbol = params.symbol?.toUpperCase(); // get stock symbol from URL
 
   try {
-    // Fetch quote data for the symbol
-    const queryOptions = { modules: ['price', 'summaryDetail'] };
-    const data = await yahooFinance.quote(symbol, queryOptions);
+    // Fetch 4 months of daily data (enough for 50-day MA + 30-day momentum)
+    const period1 = new Date(Date.now() - 1000 * 60 * 60 * 24 * 130);
+    const period2 = new Date();
 
-    if (!data) {
-      return new Response(JSON.stringify({ error: 'No data found' }), { status: 404 });
-    }
+    const [quote, chart] = await Promise.all([
+      yahooFinance.quote(symbol), 
+      yahooFinance.chart(symbol, { period1, period2, interval: "1d" })
+    ]);
 
-    // Return the fetched data as JSON
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const history =
+      chart?.quotes
+        ?.filter(q => q && q.close != null)
+        .map(q => ({ date: q.date, close: q.close })) ?? [];
 
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json({ quote, history }); // return stock info and historical data
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to fetch stock data" }, { status: 500 });
   }
 }

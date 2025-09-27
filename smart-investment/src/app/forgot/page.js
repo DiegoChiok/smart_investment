@@ -14,6 +14,8 @@ export default function ForgotPasswordPage() {
     setMessage("");
     setError("");
 
+
+//////////////////////////////////
     try {
       await sendPasswordResetEmail(auth, email);
       setMessage("Password reset email sent! Check your inbox.");
@@ -21,10 +23,26 @@ export default function ForgotPasswordPage() {
       setError(err.message);
     }
   };
+//////////////////////////////////
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-500 px-4">
-      <div className="bg-[rgba(75,85,99,0.8)] rounded-lg shadow-md p-8 max-w-md w-full">
+
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="object-cover w-full h-full"
+        >
+          <source src="/money_vid.mp4" type="video/mp4" />
+          Video Not supported
+        </video>
+      </div>
+
+      <div className="relative z-20 max-w-md w-full bg-[rgba(75,85,99,0.8)] rounded-lg shadow-md p-8 py-20">
         <h2 className="text-3xl font-bold mb-6 text-center text-black font-serif">
           Forgot Password
         </h2>
@@ -49,12 +67,13 @@ export default function ForgotPasswordPage() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-red-500 text-white rounded-lg hover:ring-4 hover:ring-red-500"
+            className="w-full py-3 bg-red-500 text-white rounded-lg hover:ring-4 hover:ring-red-500 hover:text-lg"
           >
             Send Reset Link
           </button>
         </form>
       </div>
     </div>
+
   );
 }

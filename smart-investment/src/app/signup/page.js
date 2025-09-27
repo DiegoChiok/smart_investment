@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { auth } from '../../firebase';  // adjust the path if needed
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';  
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -20,8 +20,8 @@ export default function SignUpPage() {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      await signOut(auth); // make sure they are logged out
-      router.push('/'); // assuming your login page is at `/`
+      await signOut(auth); 
+      router.push('/welcome'); 
     } catch (err) {
       setError(err.message);
     }
@@ -39,7 +39,7 @@ export default function SignUpPage() {
           className="object-cover w-full h-full"
         >
           <source src="/money_vid.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
+          Video Not supported
         </video>
       </div>
 
@@ -73,7 +73,7 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={4}
                 className="w-full px-3 py-2 border rounded-md focus:ring-4 focus:ring-black"
               />
           </div>
