@@ -1,6 +1,28 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+
+export async function GET(_req, { params }) {
+  const { symbol } = await params;
+
+  try {
+    // Fetch stock data
+    const stockRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/stocks/${symbol}`);
+    if (!stockRes.ok) throw new Error("Stock not found");
+    const stockData = await stockRes.json();
+
+    // Return without AI insights for now
+    return NextResponse.json({
+      stock: stockData,
+      insights: "AI insights temporarily disabled. The stock grading system above provides a comprehensive analysis based on key financial metrics."
+    });
+
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+/*
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // your key from .env.local
 });
@@ -8,7 +30,7 @@ const openai = new OpenAI({
 export const dynamic = "force-dynamic"; // prevent caching during dev
 
 export async function GET(_req, { params }) {
-  const { symbol } = params;
+  const { symbol } = await params;
 
   try {
     // Fetch stock data from your own stocks endpoint
@@ -43,3 +65,4 @@ export async function GET(_req, { params }) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+*/

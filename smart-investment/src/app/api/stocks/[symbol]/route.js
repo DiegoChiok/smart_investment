@@ -4,7 +4,9 @@ import yahooFinance from "yahoo-finance2";
 export const dynamic = "force-dynamic"; // avoid caching during dev
 
 export async function GET(_req, { params }) {
-  const symbol = params.symbol?.toUpperCase(); // get stock symbol from URL
+  const resolvedParams = await params;
+  const symbol = resolvedParams.symbol?.toUpperCase();
+  //const symbol = params.symbol?.toUpperCase(); // get stock symbol from URL
 
   try {
     // Fetch 4 months of daily data (enough for 50-day MA + 30-day momentum)
