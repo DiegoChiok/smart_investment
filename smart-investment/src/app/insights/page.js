@@ -184,7 +184,21 @@ export default function InsightsPage() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="relative min-h-screen flex flex-col bg-white">
+
+    <div className="absolute inset-0 z-0">
+            <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="object-cover w-full h-full"
+            >
+            <source src="/homeback.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+            </video>
+        </div>
+      <div className="relative z-20 p-8">
       <h1 className="text-4xl font-bold mb-4">Stock Insights</h1>
 
       <div className="mb-6 flex gap-2">
@@ -325,6 +339,7 @@ export default function InsightsPage() {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }
