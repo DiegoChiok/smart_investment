@@ -12,6 +12,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
     "firebase": "^12.0.0",
+    "groq-sdk": "^0.34.0",
     "gsap": "^3.13.0",
     "lottie-react": "^2.4.1",
     "motion": "^12.23.12",

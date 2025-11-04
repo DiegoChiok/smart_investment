@@ -1,68 +1,81 @@
+import Groq from "groq-sdk";
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 export async function GET(_req, { params }) {
   const { symbol } = await params;
 
   try {
-    // Fetch stock data
-    const stockRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/stocks/${symbol}`);
+    // Fetch stock data from your stocks endpoint
+    const stockRes = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/stocks/${symbol}`
+    );
     if (!stockRes.ok) throw new Error("Stock not found");
     const stockData = await stockRes.json();
 
-    // Return without AI insights for now
-    return NextResponse.json({
-      stock: stockData,
-      insights: "AI insights temporarily disabled. The stock grading system above provides a comprehensive analysis based on key financial metrics."
-    });
+    const stock = stockData.quote || stockData;
 
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
+    // Prepare stock context for AI
+    const stockContext = `
+Stock: ${stock.longName} (${stock.symbol})
+Current Price: $${stock.regularMarketPrice}
+Market Cap: $${(stock.marketCap / 1e9).toFixed(2)}B
+P/E Ratio: ${stock.trailingPE?.toFixed(2)}
+52-Week Range: $${stock.fiftyTwoWeekLow} - $${stock.fiftyTwoWeekHigh}
+EPS: $${stock.epsTrailingTwelveMonths}
+Dividend Yield: ${stock.dividendYield?.toFixed(2)}%
+Price Change Today: ${stock.regularMarketChangePercent?.toFixed(2)}%
+`;
 
-/*
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // your key from .env.local
-});
-
-export const dynamic = "force-dynamic"; // prevent caching during dev
-
-export async function GET(_req, { params }) {
-  const { symbol } = await params;
-
-  try {
-    // Fetch stock data from your own stocks endpoint
-    const stockRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stocks/${symbol}`);
-    if (!stockRes.ok) throw new Error("Failed to fetch stock data");
-    const stockData = await stockRes.json();
-
-    // Send stock data to GPT
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // or gpt-4.1-mini
+    // Call Groq AI for pros/cons analysis
+    const completion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: "You are a financial assistant. Analyze the stock and provide pros, cons, and an overall grade.",
+          content: "You are a professional stock analyst providing balanced investment analysis. Always structure your response with clear PROS and CONS sections."
         },
         {
           role: "user",
-          content: `Here is stock data for ${symbol}: ${JSON.stringify(stockData)}.
-            Please provide:
-            1. Pros
-            2. Cons
-            3. Overall grade (A-F) based on performance and trends.`,
-        },
+          content: `Analyze this stock and provide a detailed pros and cons list for potential investors. Be specific and use the provided metrics.
+
+${stockContext}
+
+Format your response as:
+PROS:
+- [Pro 1]
+- [Pro 2]
+- [Pro 3]
+...
+
+CONS:
+- [Con 1]
+- [Con 2]
+- [Con 3]
+...
+
+Keep it concise but insightful (5-7 points each).`
+        }
       ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 1000,
     });
 
-    const aiResponse = completion.choices[0].message.content;
+    const analysis = completion.choices[0]?.message?.content || "Analysis unavailable";
 
-    return NextResponse.json({ stock: stockData, insights: aiResponse });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({
+      stock: stockData,
+      analysis: analysis,
+    });
+
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }
-*/

@@ -7,10 +7,11 @@ export default function InsightsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  
   //Grading algorithm//////////////////////////////////
   const calculateStockScore = (stockData) => {
     //Extract data from Yahoo under quote
-    const stock = stockData.quote// || stockData;
+    const stock = stockData.quote;
     const history = stockData.history || []; //historical price data   
     //initialize score components
     let score = 0;
@@ -33,7 +34,7 @@ export default function InsightsPage() {
       else if (pe >= 35 && pe < 50) scores.valuation += 3;
       else if (pe >= 50) scores.valuation += 1;
     }
-    //using Future Price to Earnings if availablem (based on analyst estimates of next year earnings)
+    //using Future Price to Earnings if available (based on analyst estimates of next year earnings)
     if (stock.forwardPE) {
       const fpe = stock.forwardPE;
       //Lower Forward P/E ratios are better
@@ -71,8 +72,8 @@ export default function InsightsPage() {
     //check if book value and market price are available
     if (stock.bookValue && stock.regularMarketPrice) {
       //we want book price to be lower than market price (so we are not overpaying)
-      //book price ishow much the company is worth on paper
-      //makret price is how much investors are willing to pay
+      //book price is how much the company is worth on paper
+      //market price is how much investors are willing to pay
       const priceToBook = stock.regularMarketPrice / stock.bookValue;
       if (priceToBook < 1.5) scores.health += 10;
       else if (priceToBook < 3) scores.health += 7;
@@ -92,7 +93,7 @@ export default function InsightsPage() {
 
     //PROFITABILITY: (20 points) Conversion of revenue to profit, dividend yield, EPS
     //EPS = Earnings per share
-    //Dvidend yield = returned cash to stakeholders / price per share
+    //Dividend yield = returned cash to stakeholders / price per share
     if (stock.epsTrailingTwelveMonths) {
       //check for higher EPS values for better profitability
       const eps = stock.epsTrailingTwelveMonths;
@@ -138,7 +139,6 @@ export default function InsightsPage() {
     //ensure score does not exceed 100 (possible with overlapping metrics but unlikely)
     return { score: Math.min(100, Math.round(score)), breakdown: scores };
   };
-
   //end of grading algorithm//////////////////////////////////
 
   //helper functions for score display
@@ -161,6 +161,7 @@ export default function InsightsPage() {
     if (score >= 20) return "Not Recommended: Caution Advised";
     return "Very Poor Choice: Definitely Avoid";
   };
+
   //handle search button click
   const handleSearch = async () => {
     //validate input
@@ -175,6 +176,7 @@ export default function InsightsPage() {
       //check for errors
       if (!res.ok) throw new Error("Failed to fetch insights");
       const result = await res.json();
+      console.log("API Response:", result); // Debug log
       setData(result);
     } catch (err) {
       setError(err.message);
@@ -185,77 +187,81 @@ export default function InsightsPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-white">
-
-    <div className="absolute inset-0 z-0">
-            <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="object-cover w-full h-full"
-            >
-            <source src="/homeback.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-            </video>
-        </div>
-      <div className="relative z-20 p-8">
-      <h1 className="text-4xl font-bold mb-4">Stock Insights</h1>
-
-      <div className="mb-6 flex gap-2">
-        <input
-          type="text"
-          placeholder="Enter stock symbol (e.g., AAPL)"
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-          className="border p-2 rounded w-64"
-        />
-        <button
-          onClick={handleSearch}
-          className="bg-red-500 text-white px-4 rounded hover:bg-red-600"
+      {/*background vid from dashboard*/}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="object-cover w-full h-full"
         >
-          Search
-        </button>
+          <source src="/homeback.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
+      
+      {/*container of content in front of bg-vid*/}
+      <div className="relative z-20 p-8 text-gray-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <button
+            onClick={() => window.location.href = '/dashboard' }
+            className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition shadow-lg"
+          >
+            Bact To Dashboard
+          </button>
+          <h1 className="text-3xl md:text-4xl font-bold text-white">Stock Insights</h1>
+        </div>
+        <div className="mb-6 flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter stock symbol (e.g., AAPL)"
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+            className="border p-2 rounded w-64"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-red-500 text-white px-4 rounded hover:bg-red-600"
+          >
+            Search
+          </button>
+        </div>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+        {loading && <p className="text-white">Loading...</p>}
+        {error && <p className="text-red-600 bg-white p-2 rounded">{error}</p>}
 
-      {data && (
-        <div className="mt-6">
-          {/* Debug: Show raw data */}
-          <details className="mb-4 bg-gray-100 p-4 rounded">
-            <summary className="cursor-pointer font-semibold">Debug: View Raw Stock Data</summary>
-            <pre className="mt-2 text-xs overflow-auto">{JSON.stringify(data.stock, null, 2)}</pre>
-          </details>
-
-          {/* Stock Header */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-semibold mb-2">
-              {data.stock.longName} ({data.stock.symbol})
-            </h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-600">Current Price</p>
-                <p className="text-xl font-bold">${data.stock.regularMarketPrice?.toFixed(2)}</p>
+        {data && (() => {
+          const stock = data.stock.quote;
+          const { score, breakdown } = calculateStockScore(data.stock);
+          
+          return (
+            <div className="mt-6">
+              {/*title of stock*/}
+              <div className="bg-blue-100 rounded-lg shadow-md p-6 mb-6">
+                <h2 className="text-2xl font-semibold mb-2">
+                  {stock.longName} ({stock.symbol})
+                </h2>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-600">Current Price</p>
+                    <p className="text-xl font-bold">${stock.regularMarketPrice?.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Change</p>
+                    <p className={`text-xl font-bold ${stock.regularMarketChangePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {stock.regularMarketChangePercent?.toFixed(2)}%
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-600">Change</p>
-                <p className={`text-xl font-bold ${data.stock.regularMarketChangePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {data.stock.regularMarketChangePercent?.toFixed(2)}%
-                </p>
-              </div>
-            </div>
-          </div>
 
-          {/* Stock Score Card */}
-          {(() => {
-            const { score, breakdown } = calculateStockScore(data.stock);
-            return (
+              {/*stock score*/}
               <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4">Stock Grade</h3>
                 
-                {/* Main Score Display */}
+                {/*main score display*/}
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-3xl font-bold">{score}/100</span>
@@ -269,7 +275,7 @@ export default function InsightsPage() {
                     </span>
                   </div>
                   
-                  {/* Progress Bar */}
+                  {/*progress bar*/}
                   <div className="w-full bg-gray-200 rounded-full h-8 overflow-hidden">
                     <div
                       className={`h-full ${getScoreColor(score)} transition-all duration-1000 ease-out flex items-center justify-end pr-3`}
@@ -279,8 +285,8 @@ export default function InsightsPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Score Breakdown */}
+                
+                {/*score breakdown*/}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                   <div>
                     <p className="text-gray-600 mb-1">Valuation</p>
@@ -304,41 +310,80 @@ export default function InsightsPage() {
                   </div>
                 </div>
               </div>
-            );
-          })()}
+              {/*key metrics*/}
+              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 className="text-xl font-semibold mb-4">Key Metrics</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-600">Market Cap</p>
+                    <p className="font-semibold">${(stock.marketCap / 1e9).toFixed(2)}B</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">P/E Ratio</p>
+                    <p className="font-semibold">{stock.trailingPE?.toFixed(2) || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">52 Week Range</p>
+                    <p className="font-semibold">${stock.fiftyTwoWeekLow} - ${stock.fiftyTwoWeekHigh}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">EPS (TTM)</p>
+                    <p className="font-semibold">${stock.epsTrailingTwelveMonths?.toFixed(2) || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
 
-          {/* Additional Details */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4">Key Metrics</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-600">Market Cap</p>
-                <p className="font-semibold">${(data.stock.marketCap / 1e9).toFixed(2)}B</p>
-              </div>
-              <div>
-                <p className="text-gray-600">P/E Ratio</p>
-                <p className="font-semibold">{data.stock.trailingPE?.toFixed(2) || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">52 Week Range</p>
-                <p className="font-semibold">${data.stock.fiftyTwoWeekLow} - ${data.stock.fiftyTwoWeekHigh}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Profit Margin</p>
-                <p className="font-semibold">{data.stock.profitMargins ? (data.stock.profitMargins * 100).toFixed(2) + '%' : "N/A"}</p>
-              </div>
-            </div>
-          </div>
+              {/*AI pros/cons analysis*/}
+              {data.analysis && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h3 className="text-xl font-semibold mb-4">AI Investment Analysis</h3>
+                  {(() => {
+                    const sections = data.analysis.split(/PROS:|CONS:/i);
+                    const prosText = sections[1]?.trim() || "";
+                    const consText = sections[2]?.trim() || "";
+                    
+                    const pros = prosText.split('\n').filter(line => line.trim().match(/^[•\-\*]/));
+                    const cons = consText.split('\n').filter(line => line.trim().match(/^[•\-\*]/));
 
-          {/* AI Analysis */}
-          {data.insights && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-semibold mb-3">AI Analysis</h3>
-              <p className="text-gray-700 leading-relaxed">{data.insights}</p>
+                    return (
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {/*Pros Section*/}
+                        <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
+                          <h4 className="text-lg font-semibold text-green-800 mb-3 flex items-center">
+                            <span className="mr-2">✓</span> Pros
+                          </h4>
+                          <ul className="space-y-2">
+                            {pros.length > 0 ? pros.map((pro, idx) => (
+                              <li key={idx} className="text-sm text-gray-700 flex items-start">
+                                <span className="text-green-600 mr-2 mt-1">•</span>
+                                <span>{pro.replace(/^[•\-\*]\s*/, '')}</span>
+                              </li>
+                            )) : <li className="text-sm text-gray-500">No pros available</li>}
+                          </ul>
+                        </div>
+
+                        {/*Cons Section*/}
+                        <div className="bg-red-50 rounded-lg p-4 border-l-4 border-red-500">
+                          <h4 className="text-lg font-semibold text-red-800 mb-3 flex items-center">
+                            <span className="mr-2">✗</span> Cons
+                          </h4>
+                          <ul className="space-y-2">
+                            {cons.length > 0 ? cons.map((con, idx) => (
+                              <li key={idx} className="text-sm text-gray-700 flex items-start">
+                                <span className="text-red-600 mr-2 mt-1">•</span>
+                                <span>{con.replace(/^[•\-\*]\s*/, '')}</span>
+                              </li>
+                            )) : <li className="text-sm text-gray-500">No cons available</li>}
+                          </ul>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          );
+        })()}
       </div>
     </div>
   );
