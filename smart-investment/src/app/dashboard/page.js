@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../firebase";
-import Link from 'next/link';
+//import Link from 'next/link';
 import TiltedCard1 from '../portfolio_component/page';
 import TiltedCard2 from '../insights_component/page';
 import TiltedCard3 from '../watchlist_component/page';
@@ -31,6 +31,7 @@ export default function DashboardPage() {
       return () => unsubscribe();
     }, [router]);
 
+    
   return (
     <div className="relative min-h-screen flex flex-col bg-white font-serif font-bold">
 

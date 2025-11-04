@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function InsightsPage() {
+  const router = useRouter();
   const [symbol, setSymbol] = useState("");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -205,10 +207,10 @@ export default function InsightsPage() {
       <div className="relative z-20 p-8 text-gray-800">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <button
-            onClick={() => window.location.href = '/dashboard' }
+            onClick={() => router.push('/dashboard')}
             className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition shadow-lg"
           >
-            Bact To Dashboard
+            Back To Dashboard
           </button>
         </div>
         <div className="font-sans mb-4">
@@ -243,7 +245,7 @@ export default function InsightsPage() {
               {/*title of stock*/}
               <div className="bg-blue-100 rounded-lg shadow-md p-6 mb-6">
                 <h2 className="text-2xl font-semibold mb-2">
-                  {stock.longName} ({stock.symbol})
+                  {stock.longName}     ({stock.symbol})
                 </h2>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
@@ -260,12 +262,12 @@ export default function InsightsPage() {
               </div>
 
               {/*stock score*/}
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <div className="bg-blue-100 rounded-lg shadow-md p-6 mb-6">
                 <h3 className="text-xl font-semibold mb-4">Stock Grade</h3>
                 
                 {/*main score display*/}
                 <div className="mb-6">
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="flex justify-between items-center mb-3">
                     <span className="text-3xl font-bold">{score}/100</span>
                     <span className={`text-lg font-semibold ${
                       score >= 80 ? 'text-green-600' : 
@@ -289,7 +291,7 @@ export default function InsightsPage() {
                 </div>
                 
                 {/*score breakdown*/}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-5 gap-4 text-sm font-light">
                   <div>
                     <p className="text-gray-600 mb-1">Valuation</p>
                     <p className="font-semibold">{breakdown.valuation}/20</p>
