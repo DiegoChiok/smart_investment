@@ -34,7 +34,7 @@ export default function PortfolioPage() {
     return () => unsubscribe();
   }, []);
 
-  //load portfolio holdings from firestore
+  //load portfolio holdings from firestore///////////////////////////////////
   const loadPortfolio = async (userId) => {
     try {
       //query portfolio by userId
@@ -79,8 +79,9 @@ export default function PortfolioPage() {
       setLoading(false); 
     }
   };
+  ////////////////////////////////////////////////////////////////
 
-  //add new holding to Firestore
+  //add new holding to Firestore///////////////////////////////////////
   const handleAddHolding = async (e) => {
     //prevent default form submission
     e.preventDefault();
@@ -118,6 +119,8 @@ export default function PortfolioPage() {
       alert("Failed to add holding. Check console for details.");
     }
   };
+  ////////////////////////////////////////////////////////////////
+  
   //delete holding from Firestore/////////////////////////////////////////////////////////////////////////
   const handleDelete = async (holdingId) => {
     //confirm deletion if yes then continue

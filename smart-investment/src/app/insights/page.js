@@ -210,20 +210,22 @@ export default function InsightsPage() {
           >
             Bact To Dashboard
           </button>
-          <h1 className="text-3xl md:text-4xl font-bold text-white">Stock Insights</h1>
         </div>
-        <div className="mb-6 flex gap-2">
+        <div className="font-sans mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center justify-center">Stock Insights</h1>
+        </div>
+        <div className="mb-6 flex gap-2 flex items-center justify-center">
           <input
             type="text"
-            placeholder="Enter stock symbol (e.g., AAPL)"
+            placeholder="Enter Stock Symbol (such as AA)"
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-            className="border p-2 rounded w-64"
+            className="border p-1.5 rounded w-64 focus:ring-4 focus:ring-black"
           />
           <button
             onClick={handleSearch}
-            className="bg-red-500 text-white px-4 rounded hover:bg-red-600"
+            className="bg-green-500 text-white p-2 px-3 rounded-md hover:bg-green-600"
           >
             Search
           </button>
