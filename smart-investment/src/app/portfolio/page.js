@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import { auth, db } from "@/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 //portfolio page
 export default function PortfolioPage() {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [holdings, setHoldings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,7 +122,7 @@ export default function PortfolioPage() {
     }
   };
   ////////////////////////////////////////////////////////////////
-  
+
   //delete holding from Firestore/////////////////////////////////////////////////////////////////////////
   const handleDelete = async (holdingId) => {
     //confirm deletion if yes then continue
@@ -195,7 +197,7 @@ export default function PortfolioPage() {
         </div>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <button
-            onClick={() => window.location.href = '/dashboard' }
+            onClick={() => router.push('/dashboard')}
             className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition shadow-lg"
           >
             Bact To Dashboard

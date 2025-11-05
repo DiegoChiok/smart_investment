@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import { auth, db } from "@/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 //watchlist page
 export default function WatchlistPage() {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [holdings, setHoldings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function WatchlistPage() {
     purchaseDate: new Date().toISOString().split('T')[0]
   });
 
-  //check auth state (load watchlist if logged in)
+  //check auth state (load watchlist if logged in)////////////////////
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -33,7 +35,7 @@ export default function WatchlistPage() {
     });
     return () => unsubscribe();
   }, []);
-
+  ////////////////////////////////////////////////////////////////////
 
   //load watchlist holdings from firestore///////////////////////////////////
   const loadWatchlist = async (userId) => {
@@ -196,7 +198,7 @@ export default function WatchlistPage() {
         </div>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <button
-            onClick={() => window.location.href = '/dashboard' }
+            onClick={() => router.push('/dashboard')}
             className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition shadow-lg"
           >
             Bact To Dashboard
